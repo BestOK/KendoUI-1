@@ -1,0 +1,49 @@
+﻿@model IEnumerable<KendoUIMvcApplication1.Models.TestData>
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<h2>@ViewBag.Message</h2>
+
+@(Html.Kendo().Grid(Model)    
+      .Name("Grid")
+      .Columns(columns =>
+                   {
+                       columns.Bound(p => p.TextOne).Groupable(false);
+                       columns.Bound(p => p.TextTwo);
+                       columns.Bound(p => p.DropOne);
+                       columns.Bound(p => p.IntOne);
+                   })
+      .Editable(editable => editable.Mode(GridEditMode.InCell))
+      
+                                    .Groupable()
+                                    .Pageable()
+                                    .Sortable()
+                                    .Scrollable()
+                                    .Filterable()
+                                    .DataSource(dataSource => dataSource        
+        .Ajax()             
+        .Events(events => events.Error("error_handler"))
+        .Model(model => model.Id(p => p.TextOne))
+        .Create(update => update.Action("EditingInline_Create", "Grid"))
+        .Read(read => read.Action("EditingInline_Read", "Grid"))
+        .Update(update => update.Action("EditingInline_Update", "Grid"))
+        .Destroy(update => update.Action("EditingInline_Destroy", "Grid"))
+
+      ))
+
+<script type="text/javascript">
+    function error_handler(e) {    
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function() {
+                        message += this + "\n";
+                    });
+                }
+            });        
+            alert(message);
+        }
+    }
+</script>
